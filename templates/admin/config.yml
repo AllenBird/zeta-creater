@@ -1,0 +1,68 @@
+paths:
+  public: "public"
+groups:
+  scripts:
+    paths:
+      - app/scripts
+      - vendor
+    concat:
+      "/assets/scripts/app.js": "app/{components_vendor,scripts,components}/**/*.{js,jsx,coffee,es6}"
+      "/assets/scripts/vendor.js": "vendor/**/*.{js,coffee}"
+    order:
+      - vendor/zetabase.js
+      - ...
+      - app/scripts/app.js
+  styles:
+    paths:
+      - app/styles
+    concat:
+      "/assets/styles/vendor.css": "vendor/**/*.{css,scss,sass}"
+      "/assets/styles/app.css": "app/{components_vendor,styles,components}/**/[a-z]*.{css,scss,sass}"
+  images:
+    paths:
+      - app/images
+    sprite:
+      "../app/styles/icons.scss": "app/images/**/*.png"
+    copy:
+      "/assets/": "app/images/fonts/*"
+      "/assets/images/": "{app/images/other-images/*}"
+  views:
+    paths:
+      - app/views
+      - app/components_vendor
+    copy:
+      "/views": "app/views/**/*.hbs"
+      "/components/": "{app/{components_vendor,components}/**/view.hbs}"
+  templates:
+    paths:
+      - app/components
+    precompile:
+      "../vendor/templates.js": "app/{components_vendor,components}/**/templates/*/view.hbs"
+  files:
+    paths:
+      - app/files
+    copy:
+      "/": "app/files/*"
+modules:
+  wrapper: cmd
+  ignored: vendor/**/*
+  definition: /assets/scripts/app.js
+sprites:
+  path: /assets/images/
+  selector: .icon-
+revision:
+  prefix: ""
+  manifest: "manifest.yml"
+  files:
+    - /views/layout.hbs
+notification: true
+bundles:
+  "zetabase.js":
+    version: master
+    url: http://zeta.tesir.top/master/base/assets/scripts/zetabase.js
+  "zetabase.css":
+    version: master
+    url: http://zeta.tesir.top/master/base/assets/styles/theme-1.css
+  "../app/components_vendor/":
+    version: master
+    url: http://zeta.tesir.top/master/component/public/components-vendor.tar.gz

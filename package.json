@@ -1,0 +1,48 @@
+{
+  "name": "zeta-creator",
+  "description": "zeta' application generator",
+  "version": "0.0.1",
+  "author": "小鸟哥 <daip@dtdream.com>",
+  "contributors": [
+    "wait"
+  ],
+  "keywords": [
+    "zeta",
+    "framework",
+    "generator",
+    "web",
+    "rest",
+    "restful",
+    "app",
+    "api"
+  ],
+  "repository": "AllenBird/zeta-creator",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "2.9.0",
+    "cpr": "^1.1.2",
+    "mkdirp": "0.5.1",
+    "sorted-object": "2.0.0"
+  },
+  "main": "bin/creator",
+  "preferGlobal": true,
+  "bin": {
+    "zeta": "./bin/creator"
+  },
+  "devDependencies": {
+    "mocha": "2.5.3",
+    "rimraf": "2.5.2",
+    "supertest": "1.2.0"
+  },
+  "engines": {
+    "node": ">= 0.10"
+  },
+  "files": [
+    "bin/",
+    "templates/"
+  ],
+  "scripts": {
+    "test": "mocha --reporter spec --bail --check-leaks test/",
+    "test-ci": "mocha --reporter spec --check-leaks test/"
+  }
+}

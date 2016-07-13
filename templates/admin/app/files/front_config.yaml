@@ -1,0 +1,21 @@
+components:
+  random:
+    name: "随机数展示"
+    category: "ADMIN"
+    service: "getRandoms"
+
+mappings:
+  - pattern: "api/now"
+    methods:
+      - GET
+    service: "now"
+
+  - pattern: "api/login"
+    methods:
+      - POST
+    service: "login"
+
+  - pattern: "api/logout"
+    methods:
+      - POST
+    service: "logout"

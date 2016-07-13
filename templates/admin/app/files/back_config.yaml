@@ -1,0 +1,9 @@
+services:
+  now:
+    uri: "io.terminus.pampas_showcase.ShowcaseService:now"
+  login:
+    uri: "io.terminus.pampas_showcase.UserService:login"
+  logout:
+    uri: "io.terminus.pampas_showcase.UserService:logout"
+  getRandoms:
+    uri: "io.terminus.pampas_showcase.ShowcaseService:getRandoms"

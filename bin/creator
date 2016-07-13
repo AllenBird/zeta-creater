@@ -1,0 +1,237 @@
+#!/usr/bin/env node
+
+var program = require('commander');
+var mkdirp = require('mkdirp');
+var os = require('os');
+var fs = require('fs');
+var cpr = require('cpr');
+var path = require('path');
+var readline = require('readline');
+var sortedObject = require('sorted-object');
+
+var _exit = process.exit;
+var eol = os.EOL;
+var pkg = require('../package.json');
+
+var version = pkg.version;
+
+// Re-assign process.exit because of commander
+// TODO: Switch to a different command framework
+process.exit = exit
+
+around(program, 'optionMissingArgument', function (fn, args) {
+  program.outputHelp()
+  fn.apply(this, args)
+  return { args: [], unknown: [] }
+})
+
+before(program, 'outputHelp', function () {
+
+  this._helpShown = true
+});
+
+before(program, 'unknownOption', function () {
+
+  this._allowUnknownOption = this._helpShown
+
+  if (!this._helpShown) {
+    program.outputHelp()
+  }
+})
+
+program
+  .version(version, ' --version')
+  .usage('[options] [dir]')
+  .option('-t, --template [value]', 'shop | admin | login | register', /^(shop|admin|login|register)$/i)
+  .parse(process.argv);
+
+if (!exit.exited) {
+  main();
+}
+
+/**
+ * Install an around function; AOP.
+ */
+
+function around(obj, method, fn) {
+
+  var old = obj[method]
+
+  obj[method] = function () {
+    var args = new Array(arguments.length)
+    for (var i = 0; i < args.length; i++) args[i] = arguments[i]
+    return fn.call(this, old, args)
+  }
+}
+
+/**
+ * Install a before function; AOP.
+ */
+
+function before(obj, method, fn) {
+
+  var old = obj[method];
+
+  obj[method] = function () {
+    fn.call(this);
+    old.apply(this, arguments);
+  };
+}
+
+/**
+ * 确认是否继续操作
+ */
+
+function confirm(msg, callback) {
+  var rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  rl.question(msg, function (input) {
+    rl.close();
+    callback(/^Y|y|yes|ok|true$/i.test(input));
+  });
+}
+
+/**
+ * Create application at the given directory `path`.
+ *
+ * @param {String} path
+ */
+
+function createApplication(app_name, path, template) {
+
+  function complete() {
+    var prompt = launchedFromCmd() ? '>' : '$';
+
+    console.log();
+    console.log('   install dependencies:');
+    console.log('     %s cd %s && linner build', prompt, path);
+    console.log();
+    console.log('   run the app:');
+
+    if (launchedFromCmd()) {
+      console.log('     %s jiggly', prompt);
+    } else {
+      console.log('     %s jiggly', prompt);
+    }
+
+    console.log();
+  }
+
+  // JavaScript
+  var templatePath = loadTemplatePath(template);
+
+  console.log(templatePath);
+
+  cpr(templatePath, path, {
+      deleteFirst: true,
+      overwrite: true,
+      confirm: true
+  }, function(err, files) {
+    if (err) {
+      console.error(err)
+      return;
+    }
+
+    for (var i = 0; i < files.length; i++) {
+      console.log('   \x1b[36mcreate\x1b[0m : ' + files[i]);
+    }
+    console.log('   \x1b[36mtotal\x1b[0m : ' + files.length);
+    complete();
+  });
+}
+
+/**
+ *
+ */
+
+function emptyDirectory(path, fn) {
+  fs.readdir(path, function(err, files){
+    if (err && 'ENOENT' != err.code) throw err;
+    fn(!files || !files.length);
+  });
+}
+
+/**
+ * Graceful exit for async STDIO
+ */
+
+function exit(code) {
+  // flush output for Node.js Windows pipe bug
+  function done() {
+    if (!(draining--)) _exit(code);
+  }
+
+  var draining = 0;
+  var streams = [process.stdout, process.stderr];
+
+  exit.exited = true;
+
+  streams.forEach(function(stream){
+    // submit empty write request and wait for completion
+    draining += 1;
+    stream.write('', done);
+  });
+
+  done();
+}
+
+/**
+ * 获取平台信息
+ */
+
+function launchedFromCmd() {
+  return process.platform === 'win32'
+    && process.env._ === undefined;
+}
+
+/**
+ * 获取模板路径.
+ */
+
+function loadTemplatePath(name) {
+
+  return path.join(__dirname, '..', 'templates', name);
+}
+
+/**
+ * Main program.
+ */
+
+function main() {
+
+  // 用户输入的路径
+  var destinationPath = program.args.shift() || '.';
+  // 获取绝对路径
+  var appName = path.basename(path.resolve(destinationPath));
+  console.log('appName:', appName);
+
+  if (!program.template) {
+    program.template = 'admin';
+  }
+
+  // 目标路径是否为空？
+  emptyDirectory(destinationPath, function (empty) {
+
+    if (empty || program.force) {
+      /* 创建程序 */
+      createApplication(appName, destinationPath, program.template);
+    }
+    else
+    {
+      /* 创建程序 */
+      confirm('destination is not empty, continue? [y/N] ', function (ok) {
+        if (ok) {
+          process.stdin.destroy();
+          createApplication(appName, destinationPath, program.template);
+        } else {
+          console.error('aborting');
+          exit(1);
+        }
+      });
+    }
+  });
+}
+

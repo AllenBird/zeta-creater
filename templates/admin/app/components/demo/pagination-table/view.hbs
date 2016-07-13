@@ -1,0 +1,59 @@
+{{#component "js-comp"}}
+<div class="row">
+  <div class="col-md-12">
+    <section class="widget">
+      <header>
+        <h4>分页表格实例</h4>
+        <div class="widget-controls">
+          <a href="#"><i class="glyphicon glyphicon-cog"></i></a>
+          <a data-widgster="close" href="#"><i class="glyphicon glyphicon-remove"></i></a>
+        </div>
+      </header>
+      <div class="body">
+        <table class="table table-striped table-fixed">
+          <thead>
+          <tr>
+            <th>姓名</th>
+            <th>帐号</th>
+            <th>岗位</th>
+            <th>手机</th>
+            <th>邮箱</th>
+          </tr>
+          </thead>
+          {{#unless _DATA_.data}}
+            <tbody>
+            <tr>
+              <td colspan="5" style="text-align: center">当前的列表中没有内容</td>
+            </tr>
+            </tbody>
+          {{else}}
+            <tbody>
+            {{#each _DATA_.data}}
+              <tr data-id="{{user.id}}">
+                <td><a href="javascript:;" class="detailBtn">{{user.displayName}}</a></td>
+                <td>{{user.account}}</td>
+                <td class="text-overflow" title="{{#each posts}}{{#gt @index 0}}, {{/gt}}{{name}}{{/each}}">
+                  {{#each posts}}
+                  {{#gt @index 0}}, {{/gt}}
+                  {{name}}
+                  {{/each}}
+                </td>
+                <td>{{user.mobile}}</td>
+                <td>{{user.email}}</td>
+              </tr>
+            {{/each}}
+            </tbody>
+            <tfoot>
+            <tr>
+              <td colspan="5" style="text-align:right">
+                {{inject "common/tableplugins/pagination"}}
+              </td>
+            </tr>
+            </tfoot>
+          {{/unless}}
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
+{{/component}}
