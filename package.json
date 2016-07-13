@@ -1,7 +1,7 @@
 {
   "name": "zeta-creator",
   "description": "zeta' application generator",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "小鸟哥 <daip@dtdream.com>",
   "contributors": [
     "wait"
@@ -27,7 +27,7 @@
   "main": "bin/creator",
   "preferGlobal": true,
   "bin": {
-    "zeta": "./bin/creator"
+    "creator": "./bin/creator"
   },
   "devDependencies": {
     "mocha": "2.5.3",
