@@ -40,7 +40,7 @@ before(program, 'unknownOption', function () {
 })
 
 program
-  .version(version, ' --version')
+  .version(version, '    --version')
   .usage('[options] [dir]')
   .option('-t, --template [value]', 'shop | admin | login | register', /^(shop|admin|login|register)$/i)
   .parse(process.argv);
